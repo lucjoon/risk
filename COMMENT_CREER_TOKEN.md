@@ -4,8 +4,8 @@
 
 ### 1. Se connecter à GitHub
 - Allez sur [github.com](https://github.com) et connectez-vous avec votre compte (`lucjoon`)
-
 ### 2. Accéder aux paramètres des tokens
+
 - Cliquez sur votre **photo de profil** en haut à droite
 - Cliquez sur **Settings** (Paramètres)
 
