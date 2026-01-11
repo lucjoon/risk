@@ -2,6 +2,10 @@
 
 Un simulateur de batailles interactif pour le jeu de société Risk, permettant de simuler des combats entre deux camps avec des dés.
 
+## 🌐 Accès en ligne
+
+🔗 **[Accéder au simulateur sur GitHub Pages](https://lucjoon.github.io/risk/)**
+
 ## 🚀 Fonctionnalités
 
 ### Configuration des armées
