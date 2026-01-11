@@ -1,56 +1,72 @@
-# Dés Risk - Simulateur de batailles Risk
+# 🎲 Dés Risk - Simulateur de batailles Risk
 
-Un simulateur de batailles pour le jeu Risk avec une interface moderne et des dés 3D.
+Un simulateur de batailles interactif pour le jeu de société Risk, permettant de simuler des combats entre deux camps avec des dés.
 
-## Mise en ligne avec GitHub Pages
+## 🚀 Fonctionnalités
 
-Pour mettre ce site en ligne gratuitement avec GitHub Pages, suivez ces étapes :
+### Configuration des armées
+- **Attaquant** : Configurez le nombre de soldats (minimum 1) et le nombre de dés (1, 2 ou 3)
+- **Défenseur** : Configurez le nombre de soldats (minimum 1) et le nombre de dés (1 ou 2)
 
-### 1. Créer un compte GitHub (si vous n'en avez pas)
-- Allez sur [github.com](https://github.com) et créez un compte
+### Fonctionnalité "Stop"
+- Définissez un seuil de stop pour chaque camp (optionnel)
+- La bataille s'arrête automatiquement lorsque l'un des camps atteint ou passe en dessous de son seuil de stop
+- Permet de contrôler quand arrêter la bataille pour éviter des pertes excessives
 
-### 2. Créer un nouveau dépôt sur GitHub
-- Cliquez sur le bouton "+" en haut à droite
-- Sélectionnez "New repository"
-- Nommez le dépôt (ex: `risk-dice` ou `des-risk`)
-- Cochez "Public"
-- **Ne cochez PAS** "Initialize this repository with a README"
-- Cliquez sur "Create repository"
+### Règles du Risk
+- **L'attaquant doit toujours laisser au moins 1 soldat en réserve**
+  - Avec 3 soldats ou moins → maximum 2 dés
+  - Avec 2 soldats → maximum 1 dé
+  - Avec 1 soldat → ne peut plus attaquer (bataille terminée)
 
-### 3. Préparer votre projet local
-Le projet est déjà prêt ! Il contient juste le fichier `index.html` qui est tout ce dont vous avez besoin.
+### Interface en temps réel
+- Compteur de soldats restants affiché en haut à droite pendant la bataille
+- Mise à jour en temps réel à chaque tour
+- Résultat final avec le nombre de soldats restants et les pertes totales
 
-### 4. Pousser votre code sur GitHub
-Ouvrez un terminal dans ce dossier et exécutez :
+### Sauvegarde automatique
+- Les nombres de soldats restants sont automatiquement sauvegardés dans les champs de saisie après chaque bataille
+- Permet de continuer la bataille depuis l'état actuel
 
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/VOTRE_USERNAME/VOTRE_REPO.git
-git push -u origin main
-```
+## 📖 Comment utiliser
 
-*(Remplacez VOTRE_USERNAME et VOTRE_REPO par vos informations)*
+1. **Configurez les armées** :
+   - Entrez le nombre de soldats pour l'attaquant et le défenseur
+   - Sélectionnez le nombre de dés à utiliser pour chaque camp
+   - (Optionnel) Définissez un seuil de stop pour chaque camp
 
-### 5. Activer GitHub Pages
-- Allez sur votre dépôt GitHub
-- Cliquez sur "Settings" (en haut du dépôt)
-- Dans le menu de gauche, cliquez sur "Pages"
-- Sous "Source", sélectionnez "Deploy from a branch"
-- Choisissez "main" comme branche et "/ (root)" comme dossier
-- Cliquez sur "Save"
+2. **Lancez la bataille** :
+   - Cliquez sur le bouton "Lancer les dés"
+   - La bataille se déroule automatiquement tour par tour
+   - Observez le compteur de soldats restants en temps réel
 
-### 6. Accéder à votre site
-Votre site sera disponible à l'adresse :
-`https://VOTRE_USERNAME.github.io/VOTRE_REPO/`
+3. **Résultat** :
+   - Le résultat final s'affiche avec le vainqueur
+   - Les nombres de soldats restants sont sauvegardés automatiquement
+   - Vous pouvez relancer une bataille avec les soldats restants
 
-(Le déploiement peut prendre 1-2 minutes)
+## 🎮 Règles de combat
 
----
+- Les dés sont comparés par paires (meilleur dé contre meilleur dé)
+- Le perdant de chaque comparaison perd 1 soldat
+- La bataille continue jusqu'à ce que :
+  - L'un des camps n'ait plus de soldats
+  - L'attaquant n'ait plus qu'1 soldat (ne peut plus attaquer)
+  - Un seuil de stop est atteint
+  - 100 tours sont atteints (limite de sécurité)
 
-## Développement local
+## 🛠️ Technologies utilisées
 
-Pour tester le site localement, ouvrez simplement `index.html` dans votre navigateur.
+- HTML5
+- CSS3 (avec animations 3D pour les dés)
+- JavaScript (ES6+)
 
+## 📝 Notes
+
+- Le simulateur suit les règles classiques du Risk
+- L'interface est entièrement en français
+- Compatible avec tous les navigateurs modernes
+
+## 📄 Licence
+
+Ce projet est fourni tel quel, sans garantie.
