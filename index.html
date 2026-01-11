@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dés Risk</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .setup-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .player-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid transparent;
+        }
+
+        .player-section.attacker {
+            border-color: #dc3545;
+        }
+
+        .player-section.defender {
+            border-color: #007bff;
+        }
+
+        .player-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .attacker .player-title {
+            color: #dc3545;
+        }
+
+        .defender .player-title {
+            color: #007bff;
+        }
+
+        .dice-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .soldier-input {
+            margin-top: 10px;
+        }
+
+        .soldier-input input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1em;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .soldier-input input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .dice-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .dice-btn {
+            padding: 12px 24px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .dice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .dice-btn.active {
+            border-color: currentColor;
+            background: currentColor;
+            color: white;
+        }
+
+        .attacker .dice-btn.active {
+            border-color: #dc3545;
+            background: #dc3545;
+            color: white;
+        }
+
+        .defender .dice-btn.active {
+            border-color: #007bff;
+            background: #007bff;
+            color: white;
+        }
+
+        .roll-button {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 30px;
+        }
+
+        .roll-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .roll-button:active {
+            transform: translateY(0);
+        }
+
+        .soldiers-counter {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            font-size: 0.9em;
+        }
+
+        .soldiers-counter.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .soldiers-counter-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .soldiers-counter-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+        }
+
+        .soldiers-counter-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .soldiers-counter-attacker {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .soldiers-counter-defender {
+            color: #007bff;
+            font-weight: 600;
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results-section.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dice-results {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .dice-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dice-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .die-wrapper {
+            width: 80px;
+            height: 80px;
+            perspective: 1000px;
+            perspective-origin: center center;
+        }
+
+        .die {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s;
+        }
+
+        .die.rolling {
+            animation: roll3D 1.2s ease-out;
+        }
+
+        @keyframes roll3D {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+            12.5% {
+                transform: rotateX(90deg) rotateY(90deg) rotateZ(45deg);
+            }
+            25% {
+                transform: rotateX(180deg) rotateY(180deg) rotateZ(90deg);
+            }
+            37.5% {
+                transform: rotateX(270deg) rotateY(270deg) rotateZ(135deg);
+            }
+            50% {
+                transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg);
+            }
+            62.5% {
+                transform: rotateX(450deg) rotateY(450deg) rotateZ(225deg);
+            }
+            75% {
+                transform: rotateX(540deg) rotateY(540deg) rotateZ(270deg);
+            }
+            87.5% {
+                transform: rotateX(630deg) rotateY(630deg) rotateZ(315deg);
+            }
+            100% {
+                transform: rotateX(720deg) rotateY(720deg) rotateZ(360deg);
+            }
+        }
+
+        .die-face {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            padding: 8px;
+            box-sizing: border-box;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .dice-display.attacker .die-face {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .dice-display.defender .die-face {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+        }
+
+        .die-face.front { transform: rotateY(0deg) translateZ(40px); }
+        .die-face.back { transform: rotateY(180deg) translateZ(40px); }
+        .die-face.right { transform: rotateY(90deg) translateZ(40px); }
+        .die-face.left { transform: rotateY(-90deg) translateZ(40px); }
+        .die-face.top { transform: rotateX(90deg) translateZ(40px); }
+        .die-face.bottom { transform: rotateX(-90deg) translateZ(40px); }
+
+        .die-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+            margin: auto;
+            display: none;
+            flex-shrink: 0;
+        }
+
+        /* Configuration des points pour correspondre aux dés réels standard */
+        /* Grille 3x3: 
+           1  2  3
+           4  5  6
+           7  8  9
+        */
+        
+        /* Face 1 : point central */
+        .die-face[data-value="1"] .dot-5 {
+            display: block !important;
+        }
+        
+        /* Face 2 : diagonale (haut-gauche, bas-droite) */
+        .die-face[data-value="2"] .dot-1,
+        .die-face[data-value="2"] .dot-9 {
+            display: block !important;
+        }
+        
+        /* Face 3 : diagonale avec point central */
+        .die-face[data-value="3"] .dot-1,
+        .die-face[data-value="3"] .dot-5,
+        .die-face[data-value="3"] .dot-9 {
+            display: block !important;
+        }
+        
+        /* Face 4 : quatre coins */
+        .die-face[data-value="4"] .dot-1,
+        .die-face[data-value="4"] .dot-3,
+        .die-face[data-value="4"] .dot-7,
+        .die-face[data-value="4"] .dot-9 {
+            display: block !important;
+        }
+        
+        /* Face 5 : quatre coins + point central */
+        .die-face[data-value="5"] .dot-1,
+        .die-face[data-value="5"] .dot-3,
+        .die-face[data-value="5"] .dot-5,
+        .die-face[data-value="5"] .dot-7,
+        .die-face[data-value="5"] .dot-9 {
+            display: block !important;
+        }
+        
+        /* Face 6 : deux colonnes verticales de trois points (gauche et droite) */
+        .die-face[data-value="6"] .dot-1,
+        .die-face[data-value="6"] .dot-4,
+        .die-face[data-value="6"] .dot-7,
+        .die-face[data-value="6"] .dot-3,
+        .die-face[data-value="6"] .dot-6,
+        .die-face[data-value="6"] .dot-9 {
+            display: block !important;
+        }
+
+        .die.highlighted .die-face {
+            border: 3px solid gold;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .die.dimmed {
+            opacity: 0.5;
+            filter: grayscale(50%);
+        }
+
+        .comparison-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .comparison-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .comparison-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .comparison-item.win-attacker {
+            background: #fff5f5;
+            border-left: 4px solid #dc3545;
+        }
+
+        .comparison-item.win-defender {
+            background: #f0f8ff;
+            border-left: 4px solid #007bff;
+        }
+
+        .comparison-text {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .comparison-result {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .win-attacker .comparison-result {
+            color: #dc3545;
+        }
+
+        .win-defender .comparison-result {
+            color: #007bff;
+        }
+
+        .summary {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fff3cd;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .summary-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        .summary-text {
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .battle-log {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .battle-log-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .battle-round {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .battle-round.winner {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .final-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        .final-result-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .final-result-text {
+            font-size: 1.2em;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 768px) {
+            .setup-section {
+                grid-template-columns: 1fr;
+            }
+
+            .dice-results {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Dés Risk</h1>
+        <p class="subtitle">Simulateur de batailles Risk</p>
+
+        <div class="setup-section">
+            <div class="player-section attacker">
+                <div class="player-title">⚔️ Attaquant</div>
+                <div class="dice-selector">
+                    <label>Nombre de soldats:</label>
+                    <div class="soldier-input">
+                        <input type="number" id="attackerSoldiers" min="1" value="10" />
+                    </div>
+                    <label>Nombre de dés:</label>
+                    <div class="dice-buttons">
+                        <button class="dice-btn active" data-player="attacker" data-count="1">1</button>
+                        <button class="dice-btn" data-player="attacker" data-count="2">2</button>
+                        <button class="dice-btn" data-player="attacker" data-count="3">3</button>
+                    </div>
+                    <label>Stop à (optionnel):</label>
+                    <div class="soldier-input">
+                        <input type="number" id="attackerStop" min="0" placeholder="0 pour pas de stop" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="player-section defender">
+                <div class="player-title">🛡️ Défenseur</div>
+                <div class="dice-selector">
+                    <label>Nombre de soldats:</label>
+                    <div class="soldier-input">
+                        <input type="number" id="defenderSoldiers" min="1" value="10" />
+                    </div>
+                    <label>Nombre de dés:</label>
+                    <div class="dice-buttons">
+                        <button class="dice-btn active" data-player="defender" data-count="1">1</button>
+                        <button class="dice-btn" data-player="defender" data-count="2">2</button>
+                    </div>
+                    <label>Stop à (optionnel):</label>
+                    <div class="soldier-input">
+                        <input type="number" id="defenderStop" min="0" placeholder="0 pour pas de stop" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="roll-button" id="rollButton">Lancer les dés</button>
+
+        <div class="soldiers-counter" id="soldiersCounter">
+            <div class="soldiers-counter-title">⚔️ Soldats restants</div>
+            <div class="soldiers-counter-item">
+                <span class="soldiers-counter-attacker">Attaquant:</span>
+                <span class="soldiers-counter-attacker" id="counterAttacker">0</span>
+            </div>
+            <div class="soldiers-counter-item">
+                <span class="soldiers-counter-defender">Défenseur:</span>
+                <span class="soldiers-counter-defender" id="counterDefender">0</span>
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="dice-results">
+                <div class="dice-display attacker">
+                    <div class="dice-container" id="attackerDice"></div>
+                </div>
+                <div class="dice-display defender">
+                    <div class="dice-container" id="defenderDice"></div>
+                </div>
+            </div>
+
+            <div class="comparison-section">
+                <div class="comparison-title">📊 Comparaison des dés</div>
+                <div id="comparisons"></div>
+            </div>
+
+            <div class="summary" id="summary"></div>
+            <div class="battle-log" id="battleLog" style="display: none;"></div>
+            <div class="final-result" id="finalResult" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let attackerDiceCount = 1;
+        let defenderDiceCount = 1;
+
+        // Gestion de la sélection du nombre de dés
+        document.querySelectorAll('.dice-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const player = btn.dataset.player;
+                const count = parseInt(btn.dataset.count);
+                
+                // Désélectionner les autres boutons du même joueur
+                document.querySelectorAll(`.dice-btn[data-player="${player}"]`).forEach(b => {
+                    b.classList.remove('active');
+                });
+                
+                btn.classList.add('active');
+                
+                if (player === 'attacker') {
+                    attackerDiceCount = count;
+                } else {
+                    defenderDiceCount = count;
+                }
+            });
+        });
+
+        // Fonction pour lancer un dé
+        function rollDie() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        // Fonction pour lancer les dés
+        function rollDice() {
+            const attackerDice = [];
+            const defenderDice = [];
+
+            // Lancer les dés de l'attaquant
+            for (let i = 0; i < attackerDiceCount; i++) {
+                attackerDice.push(rollDie());
+            }
+
+            // Lancer les dés du défenseur
+            for (let i = 0; i < defenderDiceCount; i++) {
+                defenderDice.push(rollDie());
+            }
+
+            // Trier les dés en ordre décroissant
+            attackerDice.sort((a, b) => b - a);
+            defenderDice.sort((a, b) => b - a);
+
+            return { attackerDice, defenderDice };
+        }
+
+        // Fonction pour créer une face de dé avec des points
+        function createDieFace(value, className) {
+            const face = document.createElement('div');
+            face.className = `die-face ${className}`;
+            face.setAttribute('data-value', value);
+            
+            // Créer la grille 3x3 pour les points
+            for (let i = 1; i <= 9; i++) {
+                const dot = document.createElement('div');
+                dot.className = `die-dot dot-${i}`;
+                face.appendChild(dot);
+            }
+            
+            return face;
+        }
+
+        // Fonction pour obtenir la rotation finale selon la valeur du dé
+        // Configuration : front=1, right=2, top=3, bottom=4, left=5, back=6
+        function getFinalRotation(value) {
+            const rotations = {
+                1: { x: 0, y: 0, z: 0 },           // front (face avant)
+                2: { x: 0, y: -90, z: 0 },         // right (face droite)
+                3: { x: -90, y: 0, z: 0 },         // top (face haut)
+                4: { x: 90, y: 0, z: 0 },          // bottom (face bas)
+                5: { x: 0, y: 90, z: 0 },          // left (face gauche)
+                6: { x: 0, y: 180, z: 0 }          // back (face arrière)
+            };
+            return rotations[value] || rotations[1];
+        }
+
+        // Fonction pour afficher les dés en 3D
+        function displayDice(dice, containerId, numComparisons) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            // Trouver la valeur maximale (meilleur score)
+            const maxValue = Math.max(...dice);
+            
+            dice.forEach((value, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'die-wrapper';
+                
+                const die = document.createElement('div');
+                die.className = 'die';
+                
+                // Créer les 6 faces du dé
+                const faces = [
+                    { value: 1, class: 'front' },
+                    { value: 6, class: 'back' },
+                    { value: 2, class: 'right' },
+                    { value: 5, class: 'left' },
+                    { value: 3, class: 'top' },
+                    { value: 4, class: 'bottom' }
+                ];
+                
+                faces.forEach(face => {
+                    const faceElement = createDieFace(face.value, face.class);
+                    die.appendChild(faceElement);
+                });
+                
+                // Mettre en évidence uniquement le dé avec le meilleur score (valeur maximale)
+                if (value === maxValue) {
+                    die.classList.add('highlighted');
+                } else {
+                    die.classList.add('dimmed');
+                }
+                
+                wrapper.appendChild(die);
+                container.appendChild(wrapper);
+                
+                // Forcer le reflow pour s'assurer que le dé est rendu
+                void wrapper.offsetHeight;
+                
+                // Ajouter la classe rolling après le reflow pour déclencher l'animation
+                requestAnimationFrame(() => {
+                    die.classList.add('rolling');
+                    
+                    // Après l'animation, orienter le dé pour montrer la face avec la valeur
+                    setTimeout(() => {
+                        const rotation = getFinalRotation(value);
+                        die.classList.remove('rolling');
+                        die.style.animation = 'none';
+                        die.style.transform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) rotateZ(${rotation.z}deg)`;
+                    }, 1200);
+                });
+            });
+        }
+
+        // Fonction pour comparer les dés
+        // Compare uniquement le meilleur dé de chaque camp (une seule perte par lancer)
+        function compareDice(attackerDice, defenderDice) {
+            const comparisons = [];
+            // Trouver le meilleur dé (valeur maximale) de chaque camp
+            const attackerValue = Math.max(...attackerDice);
+            const defenderValue = Math.max(...defenderDice);
+            const defenderWins = defenderValue >= attackerValue;
+
+            comparisons.push({
+                attackerValue,
+                defenderValue,
+                defenderWins
+            });
+
+            return comparisons;
+        }
+
+        // Fonction pour afficher les comparaisons
+        function displayComparisons(comparisons) {
+            const container = document.getElementById('comparisons');
+            container.innerHTML = '';
+
+            const comp = comparisons[0];
+            const item = document.createElement('div');
+            item.className = `comparison-item ${comp.defenderWins ? 'win-defender' : 'win-attacker'}`;
+            
+            const text = document.createElement('div');
+            text.className = 'comparison-text';
+            text.textContent = `Meilleur dé: ${comp.attackerValue} vs ${comp.defenderValue}`;
+            
+            const result = document.createElement('div');
+            result.className = 'comparison-result';
+            result.textContent = comp.defenderWins ? '🛡️ Défenseur gagne' : '⚔️ Attaquant gagne';
+            
+            item.appendChild(text);
+            item.appendChild(result);
+            container.appendChild(item);
+        }
+
+        // Fonction pour afficher le résumé
+        function displaySummary(comparisons) {
+            const container = document.getElementById('summary');
+            const comp = comparisons[0];
+            
+            // Une seule perte par lancer (le perdant perd 1 armée)
+            const attackerLoses = comp.defenderWins ? 1 : 0;
+            const defenderLoses = comp.defenderWins ? 0 : 1;
+
+            container.innerHTML = `
+                <div class="summary-title">📋 Résumé de la bataille</div>
+                <div class="summary-text">
+                    <strong>⚔️ Attaquant:</strong> ${attackerLoses > 0 ? 'Perd 1 armée' : 'Aucune perte'}<br>
+                    <strong>🛡️ Défenseur:</strong> ${defenderLoses > 0 ? 'Perd 1 armée' : 'Aucune perte'}
+                </div>
+            `;
+        }
+
+        // Fonction pour afficher un tour de combat (sans animation des dés)
+        function displayBattleRound(round, attackerDice, defenderDice, attackerSoldiers, defenderSoldiers, attackerLoses, defenderLoses) {
+            // Ne pas afficher le journal de bataille
+            return { attackerSoldiers, defenderSoldiers };
+        }
+
+        // Fonction pour mener une bataille complète
+        async function fightBattle() {
+            let attackerSoldiers = parseInt(document.getElementById('attackerSoldiers').value) || 10;
+            let defenderSoldiers = parseInt(document.getElementById('defenderSoldiers').value) || 10;
+            const initialAttackerSoldiers = attackerSoldiers;
+            const initialDefenderSoldiers = defenderSoldiers;
+            
+            // Récupérer les seuils de stop (0 si vide signifie pas de stop)
+            const attackerStop = parseInt(document.getElementById('attackerStop').value) || 0;
+            const defenderStop = parseInt(document.getElementById('defenderStop').value) || 0;
+            
+            // Vérifier le nombre de soldats
+            if (attackerSoldiers < 1 || defenderSoldiers < 1) {
+                alert('Le nombre de soldats doit être au moins 1');
+                return;
+            }
+            
+            // Afficher le compteur de soldats
+            const soldiersCounter = document.getElementById('soldiersCounter');
+            soldiersCounter.classList.add('show');
+            document.getElementById('counterAttacker').textContent = attackerSoldiers;
+            document.getElementById('counterDefender').textContent = defenderSoldiers;
+            
+            // Réinitialiser l'affichage
+            document.getElementById('resultsSection').classList.add('show');
+            document.getElementById('battleLog').style.display = 'none';
+            document.getElementById('finalResult').style.display = 'none';
+            document.getElementById('summary').innerHTML = '';
+            document.getElementById('comparisons').innerHTML = '';
+            // Masquer la section des dés pour accélérer
+            document.querySelector('.dice-results').style.display = 'none';
+            document.querySelector('.comparison-section').style.display = 'none';
+            
+            let round = 1;
+            const maxRounds = 100; // Sécurité pour éviter les boucles infinies
+            let stoppedByStop = false;
+            
+            while (attackerSoldiers > 1 && defenderSoldiers > 0 && round <= maxRounds) {
+                // Vérifier si on a déjà atteint un seuil de stop avant de commencer le tour
+                if ((attackerStop > 0 && attackerSoldiers <= attackerStop) || 
+                    (defenderStop > 0 && defenderSoldiers <= defenderStop)) {
+                    stoppedByStop = true;
+                    break;
+                }
+                
+                // Déterminer le nombre de dés à utiliser
+                // L'attaquant doit toujours laisser au moins 1 soldat en réserve
+                // Donc si il a 3 soldats, il peut utiliser max 2 dés
+                // Si il a 2 soldats, il peut utiliser max 1 dé
+                // Si il a 1 soldat, il ne peut plus attaquer (la boucle s'arrête)
+                const attackerDiceCountThisRound = Math.min(attackerDiceCount, attackerSoldiers - 1);
+                const defenderDiceCountThisRound = Math.min(defenderDiceCount, defenderSoldiers);
+                
+                // Lancer les dés
+                const attackerDice = [];
+                const defenderDice = [];
+                
+                for (let i = 0; i < attackerDiceCountThisRound; i++) {
+                    attackerDice.push(rollDie());
+                }
+                for (let i = 0; i < defenderDiceCountThisRound; i++) {
+                    defenderDice.push(rollDie());
+                }
+                
+                attackerDice.sort((a, b) => b - a);
+                defenderDice.sort((a, b) => b - a);
+                
+                // Comparer les dés
+                const attackerValue = Math.max(...attackerDice);
+                const defenderValue = Math.max(...defenderDice);
+                const defenderWins = defenderValue >= attackerValue;
+                
+                // Calculer les pertes
+                const attackerLoses = defenderWins ? 1 : 0;
+                const defenderLoses = defenderWins ? 0 : 1;
+                
+                // Soustraire les pertes
+                attackerSoldiers -= attackerLoses;
+                defenderSoldiers -= defenderLoses;
+                
+                // Mettre à jour le compteur de soldats
+                document.getElementById('counterAttacker').textContent = attackerSoldiers;
+                document.getElementById('counterDefender').textContent = defenderSoldiers;
+                
+                // Vérifier si on a atteint un seuil de stop après les pertes
+                if ((attackerStop > 0 && attackerSoldiers <= attackerStop) || 
+                    (defenderStop > 0 && defenderSoldiers <= defenderStop)) {
+                    stoppedByStop = true;
+                    break;
+                }
+                
+                // Afficher ce tour (sans animation, juste le log)
+                displayBattleRound(round, attackerDice, defenderDice, attackerSoldiers, defenderSoldiers, attackerLoses, defenderLoses);
+                
+                // Attendre très peu avant le prochain tour
+                await new Promise(resolve => setTimeout(resolve, 10));
+                
+                round++;
+            }
+            
+            // Afficher le résultat final
+            const finalResult = document.getElementById('finalResult');
+            finalResult.style.display = 'block';
+            
+            const attackerTotalLosses = initialAttackerSoldiers - attackerSoldiers;
+            const defenderTotalLosses = initialDefenderSoldiers - defenderSoldiers;
+            
+            let winnerText = '';
+            if (stoppedByStop) {
+                let stopReason = '';
+                if (attackerStop > 0 && attackerSoldiers <= attackerStop && defenderStop > 0 && defenderSoldiers <= defenderStop) {
+                    stopReason = 'Bataille arrêtée: les deux camps ont atteint leur seuil de stop.';
+                } else if (attackerStop > 0 && attackerSoldiers <= attackerStop) {
+                    stopReason = `Bataille arrêtée: l'attaquant a atteint son seuil de stop (${attackerStop}).`;
+                } else if (defenderStop > 0 && defenderSoldiers <= defenderStop) {
+                    stopReason = `Bataille arrêtée: le défenseur a atteint son seuil de stop (${defenderStop}).`;
+                }
+                winnerText = `🛑 ${stopReason}`;
+            } else if (attackerSoldiers <= 1 && defenderSoldiers > 0) {
+                winnerText = '🛡️ Le défenseur remporte la bataille! (L\'attaquant ne peut plus attaquer)';
+            } else if (attackerSoldiers <= 0 && defenderSoldiers <= 0) {
+                winnerText = 'Égalité! Les deux camps ont été éliminés.';
+            } else if (attackerSoldiers <= 0) {
+                winnerText = '🛡️ Le défenseur remporte la bataille!';
+            } else {
+                winnerText = '⚔️ L\'attaquant remporte la bataille!';
+            }
+            
+            finalResult.innerHTML = `
+                <div class="final-result-title">${winnerText}</div>
+                <div class="final-result-text">
+                    <strong>⚔️ Attaquant:</strong> ${attackerSoldiers > 0 ? attackerSoldiers : 0} soldat${attackerSoldiers > 1 ? 's' : ''} restant${attackerSoldiers > 1 ? 's' : ''} (${attackerTotalLosses} perdu${attackerTotalLosses > 1 ? 's' : ''})<br>
+                    <strong>🛡️ Défenseur:</strong> ${defenderSoldiers > 0 ? defenderSoldiers : 0} soldat${defenderSoldiers > 1 ? 's' : ''} restant${defenderSoldiers > 1 ? 's' : ''} (${defenderTotalLosses} perdu${defenderTotalLosses > 1 ? 's' : ''})
+                </div>
+            `;
+            
+            finalResult.scrollIntoView({ behavior: 'smooth' });
+            
+            // Sauvegarder le nombre de soldats restants dans les champs de saisie
+            const finalAttackerSoldiers = Math.max(0, attackerSoldiers);
+            const finalDefenderSoldiers = Math.max(0, defenderSoldiers);
+            
+            const attackerInput = document.getElementById('attackerSoldiers');
+            const defenderInput = document.getElementById('defenderSoldiers');
+            
+            attackerInput.value = finalAttackerSoldiers;
+            defenderInput.setAttribute('value', finalAttackerSoldiers);
+            
+            defenderInput.value = finalDefenderSoldiers;
+            defenderInput.setAttribute('value', finalDefenderSoldiers);
+            
+            // Masquer le compteur de soldats après la bataille
+            document.getElementById('soldiersCounter').classList.remove('show');
+        }
+
+        // Gestion du bouton de lancement
+        document.getElementById('rollButton').addEventListener('click', () => {
+            document.getElementById('rollButton').disabled = true;
+            document.getElementById('rollButton').textContent = 'Bataille en cours...';
+            fightBattle().finally(() => {
+                document.getElementById('rollButton').disabled = false;
+                document.getElementById('rollButton').textContent = 'Lancer les dés';
+            });
+        });
+    </script>
+</body>
+</html>
+
